@@ -6,37 +6,51 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  Put,
 } from "@nestjs/common";
 import { UsuarioService } from "./usuario.service";
-import { CreateUsuarioDto } from "./dto/create-usuario.dto";
-import { UpdateUsuarioDto } from "./dto/update-usuario.dto";
+import { CreateUsuarioDTO } from "./dto/create-usuario.dto";
+import { UpdatePatchUsuarioDTO } from "./dto/update-patch-usuario.dto";
+import { UpdatePutUsuarioDTO } from "./dto/update-put-usuario.dto";
 
-@Controller("usuario")
+@Controller("usuarios")
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
   @Post()
-  create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    return this.usuarioService.create(createUsuarioDto);
+  async create(@Body() createUsuarioDTO: CreateUsuarioDTO) {
+    return this.usuarioService.create(createUsuarioDTO);
   }
 
   @Get()
-  findAll() {
-    return this.usuarioService.findAll();
+  async list() {
+    return this.usuarioService.listarTodos();
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.usuarioService.findOne(+id);
+  async show(@Param("id", ParseIntPipe) id: number) {
+    return this.usuarioService.listarUm(id);
+  }
+
+  @Put(":id")
+  async updateTotal(
+    @Body() updatePutUsuarioDTO: UpdatePutUsuarioDTO,
+    @Param("id", ParseIntPipe) id: number
+  ) {
+    return this.usuarioService.update(id, updatePutUsuarioDTO);
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  async updateParcial(
+    @Body() updatePatchUsuarioDTO: UpdatePatchUsuarioDTO,
+    @Param("id", ParseIntPipe) id: number
+  ) {
+    return this.usuarioService.update(id, updatePatchUsuarioDTO);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.usuarioService.remove(+id);
+  async delete(@Param("id", ParseIntPipe) id: number) {
+    return this.usuarioService.remove(id);
   }
 }
